@@ -42,13 +42,7 @@ const ClientLeft = () => {
                     </div>
                     <div className='client-left-content-menu mb-4 flex flex-col items-start justify-start'>
                         <span className="text-xs text-gray-500">最近对话</span>
-                        {
-                            Array.from({ length: 50 }).map((_, index) => (
-                                <div key={index} className="flex flex-row items-center justify-start">
-                                    <span className="text-sm ml-1.5">对话 {index + 1}</span>
-                                </div>
-                            ))
-                        }
+
                     </div>
                 </div>
             </div>
