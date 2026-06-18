@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Plus, Wand2, BrainCircuit, Telescope, GraduationCap, Presentation, Video, MoreHorizontal, Mic, ArrowUp } from 'lucide-react';
+import ChatDisplayArea from './AIChat';
 
 // 模拟的功能列表数据
 const FEATURES = [
@@ -12,7 +13,11 @@ const FEATURES = [
   { icon: MoreHorizontal, label: '更多' },
 ];
 
-export default function AIChatInput() {
+interface IProps {
+  onChange: (context: any) => void;
+}
+export default function AIChatInput(props: IProps) {
+  const { onChange } = props;
   const [value, setValue] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -33,12 +38,32 @@ export default function AIChatInput() {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       console.log('发送消息:', value);
+      onChange(value);
       // 在这里添加发送逻辑
     }
   };
 
   return (
     <div className="w-full max-w-4xl mx-auto p-4">
+      {/* 对话区域 */}
+      <div className='w-full bg-amber-600'>
+        <ChatDisplayArea
+          messages={
+            [
+              {
+                id: '1',
+                role: 'user',
+                content: '你好呀!',
+              },
+              {
+                id: '2',
+                role: 'assistant',
+                content: '你好呀！今天过得怎么样？',
+              },
+            ]
+          }
+        />
+      </div>
       {/* 主容器 */}
       <div className="relative flex flex-col bg-white border border-gray-200 rounded-[24px] shadow-sm focus-within:ring-2 focus-within:ring-blue-100 focus-within:border-blue-300 transition-all duration-200 overflow-hidden">
 
@@ -50,7 +75,7 @@ export default function AIChatInput() {
           onKeyDown={handleKeyDown}
           placeholder="向千问提问"
           rows={1}
-          className="w-full px-5 pt-4 pb-2 text-base text-gray-800 placeholder-gray-400 bg-transparent border-none outline-none resize-none min-h-[56px]"
+          className="w-full px-5 pt-4 pb-2 text-base text-gray-800 placeholder-gray-400 bg-transparent border-none outline-none resize-none min-h-14"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }} // Firefox/IE 隐藏滚动条
         />
         {/* Webkit 浏览器隐藏滚动条的样式注入 */}
@@ -89,11 +114,10 @@ export default function AIChatInput() {
             {/* 发送按钮 */}
             <button
               disabled={!value.trim()}
-              className={`p-2 rounded-full transition-all duration-200 ${
-                value.trim()
-                  ? 'bg-black text-white shadow-md hover:bg-gray-800'
-                  : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-              }`}
+              className={`p-2 rounded-full transition-all duration-200 ${value.trim()
+                ? 'bg-black text-white shadow-md hover:bg-gray-800'
+                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                }`}
             >
               <ArrowUp size={20} strokeWidth={2.5} />
             </button>
