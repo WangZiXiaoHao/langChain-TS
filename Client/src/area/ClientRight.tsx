@@ -11,8 +11,10 @@ import {
 import { ArrowLeftRight } from "lucide-react";
 import AiChatInput from "@/components/ui/AiChatInput";
 import { useNavigate } from "react-router-dom";
-import Service from "@/lib/request";
-
+import { Request } from "@/lib/request_fetch";
+import type { ChatMessage } from "@/type";
+import { userSendMsg, LLMSendMsg } from '@/store/messagesSlice';
+import { useSelector, useDispatch } from "react-redux";
 
 interface IProps {
     sessionID?: string; //用于判断是否进入对话状态
@@ -21,26 +23,34 @@ interface IProps {
 
 const ClientRight = (props: IProps) => {
     const Navigate = useNavigate();
+    // 提取状态
+    const messages = useSelector((state: any) => state.message.messages)
+    const dispatch = useDispatch();
+
     const { sessionID } = props;
     const isChat = !!sessionID;
-    console.log("#####ClientRight/sessionID =>", sessionID)
+    // 发起请求 
+    const chatWithLLM = async (msg: ChatMessage) => {
+        // 发起请求 流式输出
+        await Request(
+            '/api/ollama/chat',
+            {
+                method: 'POST',
+                body: msg,
+                stream: true,
+                onChunk(chunk, fullText) {
+                    dispatch(LLMSendMsg(chunk))
+                },
+            },
+        )
+    }
 
 
     // 对话内容
-    const onChange = (val: string) => {
-        // 生成UUID 跳转路由聊天界面
-        const uniqueId = crypto.randomUUID().replace(/-/g, "");
-        console.log("#######val => ", val, "##### UUID =>", uniqueId);
-        Navigate(`/chat/${uniqueId}`)
-        // 发起请求
-        // Service.post(
-        //     '/ollama/chat',
-        //     {
-        //         UUID: uniqueId,
-        //         message: val
-        //     }
-        // )
-
+    const onChange = (message: ChatMessage) => {
+        // Navigate(`/chat/${message.uniqueId}`)
+        dispatch(userSendMsg(message));
+        chatWithLLM(message)
     }
     return (
         <div className="client-right flex flex-col items-center">
@@ -83,7 +93,7 @@ const ClientRight = (props: IProps) => {
                 }
 
                 <div className="client-right-content-bottom">
-                    <AiChatInput onChange={onChange} />
+                    <AiChatInput onChange={onChange} messages={messages} />
                 </div>
                 {
                     isChat &&

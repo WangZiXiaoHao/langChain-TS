@@ -1,21 +1,7 @@
 import React, { useRef, useEffect, useCallback } from 'react';
+import type { ChatMessage } from '@/type';
 
 // --- 1. 类型定义 (Type Definitions) ---
-
-/**
- * 消息角色
- */
-export type Role = 'user' | 'assistant' | 'system';
-
-/**
- * 单条消息数据结构
- */
-export interface ChatMessage {
-    id: string; // 唯一ID，用于React key
-    role: Role;
-    content: string | React.ReactNode; // 支持纯文本或富文本节点
-    isStreaming?: boolean; // 标记当前是否正在生成中（用于显示光标等）
-}
 
 /**
  * 自定义渲染函数的参数
@@ -88,16 +74,15 @@ const ChatDisplayArea: React.FC<ChatDisplayAreaProps> = ({
                     padding: '12px 16px',
                     borderRadius: '8px',
                     marginBottom: '16px',
-                    maxWidth: '80%',
                     wordBreak: 'break-word',
-                    backgroundColor: message.role === 'user' ? '#e3f2fd' : '#f5f5f5',
+                    backgroundColor: message.role === 'user' ? '#e3f2fd' : '#fff',
                     alignSelf: message.role === 'user' ? 'flex-end' : 'flex-start',
                     color: '#333',
                 }}
             >
                 {/* 这里可以根据需要扩展 Markdown 解析器 */}
                 {typeof message.content === 'string' ? (
-                    <p style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{message.content}</p>
+                    <p className='m-0 whitespace-pre-wrap text-left'>{message.content}</p>
                 ) : (
                     message.content
                 )}
@@ -151,7 +136,7 @@ const ChatDisplayArea: React.FC<ChatDisplayAreaProps> = ({
             ) : (
                 <>
                     {messages.map((msg, index) => (
-                        <div key={msg.id} style={{ display: 'flex', flexDirection: 'column' }}>
+                        <div key={msg.uniqueId} className='flex flex-col'>
                             {activeRenderer({ message: msg, index })}
                         </div>
                     ))}

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Ollama } from '@langchain/ollama';
 import { Observable } from 'rxjs';
+import { ChatRequestType } from 'src/type';
 
 @Injectable()
 export class OllamaService {
@@ -13,15 +14,15 @@ export class OllamaService {
     }
     // 在这里可以实现与Ollama的对话逻辑
     // 例如，可以使用HTTP请求将消息发送到Ollama的API，并返回响应
-    chatWithOllama(message: string): Observable<string> {
-        console.log('OllamaService received message:', message);
+    chatWithOllama(message: ChatRequestType[]): Observable<string> {
+        // console.log('OllamaService received message:', message);
         return new Observable((subscriber) => {
-            console.log('Starting chat with Ollama, message:', message);
+            // console.log('Starting chat with Ollama, message:', message);
             const runStream = async () => {
                 try {
-                    console.log('Sending message to Ollama:', message);
-                    const stream = await this.ollama.stream(message);
-                    console.log('Received stream from Ollama', stream);
+                    // console.log('Sending message to Ollama:', message);
+                    const stream = await this.ollama.stream(message as any);
+                    // console.log('Received stream from Ollama', stream);
                     for await (const chunk of stream) {
                         subscriber.next(chunk); // 逐块发送生成的文本
                     }

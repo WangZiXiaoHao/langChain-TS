@@ -5,14 +5,14 @@ import type { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'a
 import { toast } from "sonner";
 
 // 1. 创建 Axios 实例
-const Service: AxiosInstance = axios.create({
+const Request_Axios: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
   timeout: 15000,
   headers: { 'Content-Type': 'application/json' },
 });
 
 // 2. 请求拦截器
-Service.interceptors.request.use(
+Request_Axios.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = localStorage.getItem('token');
     if (token && config.headers) {
@@ -24,9 +24,10 @@ Service.interceptors.request.use(
 );
 
 // 3. 响应拦截器
-Service.interceptors.response.use(
+Request_Axios.interceptors.response.use(
   (response: AxiosResponse) => {
     const res = response.data;
+    console.log(res, '#### LLM return stream')
     // 假设后端统一返回格式为 { code: 200, data: any, message: string }
     if (res.code === 200) {
       return res.data;
@@ -68,4 +69,4 @@ Service.interceptors.response.use(
   }
 );
 
-export default Service;
+export default Request_Axios;

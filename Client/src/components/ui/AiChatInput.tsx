@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Plus, Wand2, BrainCircuit, Telescope, GraduationCap, Presentation, Video, MoreHorizontal, Mic, ArrowUp } from 'lucide-react';
-import ChatDisplayArea from './AIChat';
+import ChatDisplayArea from './ChatDisplayArea';
+import type { ChatMessage } from '@/type';
+
 
 // 模拟的功能列表数据
 const FEATURES = [
@@ -15,9 +17,10 @@ const FEATURES = [
 
 interface IProps {
   onChange: (context: any) => void;
+  messages: ChatMessage[];
 }
 export default function AIChatInput(props: IProps) {
-  const { onChange } = props;
+  const { onChange, messages } = props;
   const [value, setValue] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -37,35 +40,31 @@ export default function AIChatInput(props: IProps) {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      console.log('发送消息:', value);
-      onChange(value);
-      // 在这里添加发送逻辑
+      // console.log('发送消息:', value);
+      const message: ChatMessage = {
+        uniqueId: crypto.randomUUID().replace(/-/g, ""),
+        role: 'user',
+        type: 'text',
+        content: value
+      }
+      if (typeof value === 'string') {
+        onChange(message);
+        setValue('');
+      }
+
     }
   };
 
   return (
     <div className="w-full max-w-4xl mx-auto p-4">
       {/* 对话区域 */}
-      <div className='w-full bg-amber-600'>
+      <div className='w-full'>
         <ChatDisplayArea
-          messages={
-            [
-              {
-                id: '1',
-                role: 'user',
-                content: '你好呀!',
-              },
-              {
-                id: '2',
-                role: 'assistant',
-                content: '你好呀！今天过得怎么样？',
-              },
-            ]
-          }
+          messages={messages}
         />
       </div>
       {/* 主容器 */}
-      <div className="relative flex flex-col bg-white border border-gray-200 rounded-[24px] shadow-sm focus-within:ring-2 focus-within:ring-blue-100 focus-within:border-blue-300 transition-all duration-200 overflow-hidden">
+      <div className="relative flex flex-col bg-white border border-gray-200 rounded-[24px] shadow-sm transition-all duration-200 overflow-hidden">
 
         {/* 1. 输入区域 */}
         <textarea
@@ -75,7 +74,7 @@ export default function AIChatInput(props: IProps) {
           onKeyDown={handleKeyDown}
           placeholder="向千问提问"
           rows={1}
-          className="w-full px-5 pt-4 pb-2 text-base text-gray-800 placeholder-gray-400 bg-transparent border-none outline-none resize-none min-h-14"
+          className="w-full px-5 pt-4 pb-2 text-base text-gray-800 placeholder-gray-400 bg-transparent border-none outline-none resize-none min-h-14 focus:outline-none "
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }} // Firefox/IE 隐藏滚动条
         />
         {/* Webkit 浏览器隐藏滚动条的样式注入 */}

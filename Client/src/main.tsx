@@ -2,11 +2,12 @@ import { createRoot } from 'react-dom/client'
 import { RouterProvider } from 'react-router-dom'
 import router from './router/index.tsx'
 import './index.css'
-import { Toaster } from 'sonner'
+import { Provider } from 'react-redux'
+import { store } from './store'
+// import { Toaster } from 'sonner'
 
 createRoot(document.getElementById('root')!).render(
-  <div>
+  <Provider store={store}>
     <RouterProvider router={router} />
-    <Toaster />
-  </div>
+  </Provider>
 )
