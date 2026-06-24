@@ -14,13 +14,18 @@ const messagesSlice = createSlice({
         },
         LLMSendMsg: ({ messages }: { messages: ChatMessage[] }, action: { type: string, payload: string }) => {
             const { payload } = action;
-            const res = parseSSEMessages(payload).events.map((i: any) => i.data.content).join(" ").replace(/-/g, ' ');
-
-            // console.log(parseSSEMessages(payload), '#### LLMMsg')
+            const paresResult = parseSSEMessages(payload);
+            const res = paresResult.events.map((i: any) => i.data.content).join(" ").replace(/-/g, ' ');
+            const { events } = paresResult;
+            // console.log(paresResult, '#### LLMMsg')
             // 最后一条消息需要时assistant，即可追加
             if (messages[messages.length - 1].role === 'assistant') {
                 // 追加
                 messages[messages.length - 1].content += res;
+                // @ts-ignore
+                if (events[events.length - 1]?.data.end) {
+                    messages[messages.length - 1].isStreaming = false;
+                }
             } else {
                 // 构造LLM回复消息
                 const LLMMsg: ChatMessage = {

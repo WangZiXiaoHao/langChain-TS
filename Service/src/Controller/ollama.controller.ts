@@ -10,14 +10,15 @@ export class OllamaController {
 
   @Post('/chat')
   @Sse()
-  @Header('Content-Type', 'text/application/json')
+  @Header('Content-Type', 'application/json')
   chatWithOllama(@Body() message: ChatRequestType): Observable<Object> {
-    console.log('Received chat request:', message);
+    // console.log('Received chat request:', message);
     const { role, content } = message;
     return this.ollamaService.chatWithOllama([{role, content}]).pipe(
       map((chunk) => ({
-        data: { type: 'text', content: chunk },
+        data: { type: 'text', content: chunk, end: !chunk },
       }))
     );
   }
+  
 }

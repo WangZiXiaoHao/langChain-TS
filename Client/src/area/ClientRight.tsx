@@ -48,8 +48,8 @@ const ClientRight = (props: IProps) => {
 
     // 对话内容
     const onChange = (message: ChatMessage) => {
-        // Navigate(`/chat/${message.uniqueId}`)
         dispatch(userSendMsg(message));
+        Navigate(`/chat/${message.uniqueId}`)
         chatWithLLM(message)
     }
     return (

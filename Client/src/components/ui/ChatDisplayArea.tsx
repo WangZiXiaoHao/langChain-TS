@@ -82,7 +82,7 @@ const ChatDisplayArea: React.FC<ChatDisplayAreaProps> = ({
             >
                 {/* 这里可以根据需要扩展 Markdown 解析器 */}
                 {typeof message.content === 'string' ? (
-                    <p className='m-0 whitespace-pre-wrap text-left'>{message.content}</p>
+                    <p className='m-0 whitespace-pre-wrap text-left inline-block'>{message.content}</p>
                 ) : (
                     message.content
                 )}
